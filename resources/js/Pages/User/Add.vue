@@ -1,8 +1,48 @@
+<template>
+    <Form @submit="submit" :validation-schema="schema">
+        <div style="display: flex; flex-direction: column; width: 20%;">
+            <Field name="form.name" v-slot="{ field }">
+                <label for="name">First name:</label>
+                <input name="form.name" v-bind="field" v-model="form.name" />
+                <ErrorMessage name="form.name" />
+                <div v-if="errors.name">{{ errors.name }}</div>
+            </Field>
+
+            <Field name="form.email" v-slot="{ field }">
+                <label for="email">Email:</label>
+                <input name="form.email" v-bind="field" v-model="form.email" />
+                <ErrorMessage name="form.email" />
+                <div v-if="errors.email">{{ errors.email }}</div>
+            </Field>
+
+            <Field name="form.password" v-slot="{ field }">
+                <label for="password">Password:</label>
+                <input
+                    type="password"
+                    name="form.password"
+                    v-bind="field"
+                    v-model="form.password"
+                />
+                <ErrorMessage name="form.password" />
+                <div v-if="errors.password">{{ errors.password }}</div>
+            </Field>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button type="submit">Submit</button>
+            <ComponentAdd @customEvent="customEvent" />
+        </div>
+    </Form>
+</template>
 <script setup lang="ts">
-import { reactive, inject } from "vue";
+import { ref, reactive, inject } from "vue";
 import { router } from "@inertiajs/vue3";
 import ComponentAdd from "./ComponentAdd.vue";
+import { Form, Field, ErrorMessage } from "vee-validate";
+import * as yup from "yup";
 import emitter from "../EventBus";
+
+defineProps({ errors: Object });
 
 const form = reactive({
     name: null,
@@ -10,10 +50,19 @@ const form = reactive({
     email: null,
 });
 
+const schema = yup.object({
+    form: yup.object({
+        name: yup.string().required().label("Name"),
+        email: yup.string().required().email().label("Email"),
+        password: yup.string().required().min(8).label("Password"),
+    }),
+});
+
 const submit = () => {
     router.visit("/store-user", {
         method: "post",
         data: form,
+        preserveState: true,
         onSuccess: () => {
             console.log("Success");
         },
@@ -28,17 +77,3 @@ emitter.on("customEventBus", (payload) => {
     console.log("Received event:", payload);
 });
 </script>
-<template>
-    <form @submit.prevent="submit">
-        <label for="name">First name:</label>
-        <input id="name" v-model="form.name" />
-
-        <label for="email">Email:</label>
-        <input id="email" v-model="form.email" />
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="form.password" />
-        <button type="submit">Submit</button>
-    </form>
-    <ComponentAdd @customEvent="customEvent" />
-</template>

@@ -1,6 +1,7 @@
 <template>
     <Form @submit="submit" :validation-schema="schema">
         <div style="display: flex; flex-direction: column; width: 20%;">
+            {{ errors }}
             <Field name="form.name" v-slot="{ field }">
                 <label for="name">First name:</label>
                 <input name="form.name" v-bind="field" v-model="form.name" />
@@ -66,6 +67,9 @@ const submit = () => {
         onSuccess: () => {
             console.log("Success");
         },
+        onError: err => {
+            console.log(err);
+        }
     });
 };
 

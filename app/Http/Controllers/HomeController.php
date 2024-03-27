@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\TestException;
 use App\Http\Requests\User\CreateRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;

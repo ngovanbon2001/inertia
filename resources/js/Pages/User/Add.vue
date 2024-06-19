@@ -1,6 +1,6 @@
 <template>
     <Form @submit="submit" :validation-schema="schema">
-        <div style="display: flex; flex-direction: column; width: 20%;">
+        <div style="display: flex; flex-direction: column; width: 20%">
             {{ errors }}
             <Field name="form.name" v-slot="{ field }">
                 <label for="name">First name:</label>
@@ -28,8 +28,9 @@
                 <div v-if="errors.password">{{ errors.password }}</div>
             </Field>
         </div>
+        <Test :user="user" :data="data"/>
 
-        <div style="margin-top: 20px;">
+        <div style="margin-top: 20px">
             <button type="submit">Submit</button>
             <ComponentAdd @customEvent="customEvent" />
         </div>
@@ -40,6 +41,7 @@ import { ref, reactive, inject } from "vue";
 import { router } from "@inertiajs/vue3";
 import ComponentAdd from "./ComponentAdd.vue";
 import { Form, Field, ErrorMessage } from "vee-validate";
+import Test from "../Test.vue";
 import * as yup from "yup";
 import emitter from "../EventBus";
 
@@ -50,6 +52,11 @@ const form = reactive({
     password: null,
     email: null,
 });
+
+const data = {
+    name: "John Doe",
+    age: 30,
+};
 
 const schema = yup.object({
     form: yup.object({
@@ -67,9 +74,9 @@ const submit = () => {
         onSuccess: () => {
             console.log("Success");
         },
-        onError: err => {
+        onError: (err) => {
             console.log(err);
-        }
+        },
     });
 };
 
